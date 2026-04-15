@@ -105,14 +105,6 @@ def set_bg():
             margin-top: 0.5rem;
         }}
 
-        .prediction-box {{
-            background: rgba(255, 255, 255, 0.82);
-            padding: 2rem;
-            border-radius: 24px;
-            box-shadow: 0 6px 24px rgba(0,0,0,0.25);
-            margin-top: 1rem;
-        }}
-
         h1, h2, h3, p, label, div {{
             color: black !important;
         }}
@@ -160,7 +152,7 @@ if st.session_state.page == "Home":
         """
         <div class="top-card">
             <div class="page-title">Lung Cancer Prediction</div>
-            
+           
         </div>
         """,
         unsafe_allow_html=True
@@ -185,8 +177,6 @@ elif st.session_state.page == "Prediction":
         unsafe_allow_html=True
     )
 
-    st.markdown('<div class="prediction-box">', unsafe_allow_html=True)
-
     name = st.text_input("Enter Patient Name")
 
     gender = st.selectbox("Gender (Male=1, Female=0)", [0, 1])
@@ -204,8 +194,6 @@ elif st.session_state.page == "Prediction":
     shortness_breath = st.selectbox("Shortness of Breath (Yes=1, No=0)", [0, 1])
     swallowing_difficulty = st.selectbox("Swallowing Difficulty (Yes=1, No=0)", [0, 1])
     chest_pain = st.selectbox("Chest Pain (Yes=1, No=0)", [0, 1])
-
-    st.markdown('</div>', unsafe_allow_html=True)
 
     col1, col2 = st.columns(2)
 
