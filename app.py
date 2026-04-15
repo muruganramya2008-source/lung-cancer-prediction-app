@@ -2,6 +2,7 @@ import streamlit as st
 import joblib
 import numpy as np
 import os
+import base64
 
 # -----------------------------
 # Page config
@@ -13,38 +14,52 @@ st.set_page_config(
 )
 
 # -----------------------------
-# Background image
+# Background image from local file
 # -----------------------------
+def get_base64_image(image_path):
+    with open(image_path, "rb") as img_file:
+        return base64.b64encode(img_file.read()).decode()
+
 def set_bg():
+    base_path = os.path.dirname(__file__)
+    image_path = os.path.join(base_path, "lungs_bg.webp")
+    bg_image = get_base64_image(image_path)
+
     st.markdown(
-        """
+        f"""
         <style>
-        .stApp {
-            background-image: url("https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1600&q=80");
+        .stApp {{
+            background-image: url("data:image/webp;base64,{bg_image}");
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
-        }
+        }}
 
-        .main-card {
+        .main-card {{
             background-color: rgba(255, 255, 255, 0.82);
             padding: 2rem;
             border-radius: 18px;
-            box-shadow: 0 4px 18px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 18px rgba(0,0,0,0.25);
             margin-top: 2rem;
-        }
+        }}
 
-        .result-box {
+        .result-box {{
             background-color: rgba(255, 255, 255, 0.86);
             padding: 2rem;
             border-radius: 18px;
             text-align: center;
             margin-top: 2rem;
-        }
+            box-shadow: 0 4px 18px rgba(0,0,0,0.25);
+        }}
 
-        h1, h2, h3, p, label {
+        h1, h2, h3, p, label {{
             color: black !important;
-        }
+        }}
+
+        div[data-testid="stButton"] > button {{
+            border-radius: 10px;
+            font-weight: bold;
+        }}
         </style>
         """,
         unsafe_allow_html=True
