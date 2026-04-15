@@ -20,7 +20,7 @@ def set_bg():
         """
         <style>
         .stApp {
-            background-image: url("https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=1600&q=80");
+            background-image: url("https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1600&q=80");
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -34,22 +34,16 @@ def set_bg():
             margin-top: 2rem;
         }
 
-        .center-btn {
-            display: flex;
-            justify-content: center;
-            margin-top: 2rem;
-        }
-
-        h1, h2, h3, p, label {
-            color: black !important;
-        }
-
         .result-box {
             background-color: rgba(255, 255, 255, 0.86);
             padding: 2rem;
             border-radius: 18px;
             text-align: center;
             margin-top: 2rem;
+        }
+
+        h1, h2, h3, p, label {
+            color: black !important;
         }
         </style>
         """,
@@ -85,10 +79,12 @@ if "patient_name" not in st.session_state:
 # -----------------------------
 if st.session_state.page == "Home":
     st.markdown('<div class="main-card">', unsafe_allow_html=True)
+
     st.markdown(
         "<h1 style='text-align:center;'>Lung Cancer Prediction</h1>",
         unsafe_allow_html=True
     )
+
     st.markdown(
         "<p style='text-align:center; font-size:20px;'>Click the button below to start prediction</p>",
         unsafe_allow_html=True
@@ -107,6 +103,7 @@ if st.session_state.page == "Home":
 # -----------------------------
 elif st.session_state.page == "Prediction":
     st.markdown('<div class="main-card">', unsafe_allow_html=True)
+
     st.markdown(
         "<h2 style='text-align:center;'>Prediction Page</h2>",
         unsafe_allow_html=True
@@ -114,38 +111,21 @@ elif st.session_state.page == "Prediction":
 
     name = st.text_input("Enter Patient Name")
 
-    gender = st.selectbox("Gender", ["Male", "Female"])
+    gender = st.selectbox("Gender (Male=1, Female=0)", [0, 1])
     age = st.number_input("Age", min_value=1, max_value=100, value=50)
-
-    smoking = st.selectbox("Smoking", ["No", "Yes"])
-    yellow_fingers = st.selectbox("Yellow Fingers", ["No", "Yes"])
-    anxiety = st.selectbox("Anxiety", ["No", "Yes"])
-    peer_pressure = st.selectbox("Peer Pressure", ["No", "Yes"])
-    chronic_disease = st.selectbox("Chronic Disease", ["No", "Yes"])
-    fatigue = st.selectbox("Fatigue", ["No", "Yes"])
-    allergy = st.selectbox("Allergy", ["No", "Yes"])
-    wheezing = st.selectbox("Wheezing", ["No", "Yes"])
-    alcohol = st.selectbox("Alcohol Consuming", ["No", "Yes"])
-    coughing = st.selectbox("Coughing", ["No", "Yes"])
-    shortness_breath = st.selectbox("Shortness of Breath", ["No", "Yes"])
-    swallowing_difficulty = st.selectbox("Swallowing Difficulty", ["No", "Yes"])
-    chest_pain = st.selectbox("Chest Pain", ["No", "Yes"])
-
-    # Encode inputs
-    gender_value = 1 if gender == "Male" else 0
-    smoking_value = 1 if smoking == "Yes" else 0
-    yellow_fingers_value = 1 if yellow_fingers == "Yes" else 0
-    anxiety_value = 1 if anxiety == "Yes" else 0
-    peer_pressure_value = 1 if peer_pressure == "Yes" else 0
-    chronic_disease_value = 1 if chronic_disease == "Yes" else 0
-    fatigue_value = 1 if fatigue == "Yes" else 0
-    allergy_value = 1 if allergy == "Yes" else 0
-    wheezing_value = 1 if wheezing == "Yes" else 0
-    alcohol_value = 1 if alcohol == "Yes" else 0
-    coughing_value = 1 if coughing == "Yes" else 0
-    shortness_breath_value = 1 if shortness_breath == "Yes" else 0
-    swallowing_difficulty_value = 1 if swallowing_difficulty == "Yes" else 0
-    chest_pain_value = 1 if chest_pain == "Yes" else 0
+    smoking = st.selectbox("Smoking (Yes=1, No=0)", [0, 1])
+    yellow_fingers = st.selectbox("Yellow Fingers (Yes=1, No=0)", [0, 1])
+    anxiety = st.selectbox("Anxiety (Yes=1, No=0)", [0, 1])
+    peer_pressure = st.selectbox("Peer Pressure (Yes=1, No=0)", [0, 1])
+    chronic_disease = st.selectbox("Chronic Disease (Yes=1, No=0)", [0, 1])
+    fatigue = st.selectbox("Fatigue (Yes=1, No=0)", [0, 1])
+    allergy = st.selectbox("Allergy (Yes=1, No=0)", [0, 1])
+    wheezing = st.selectbox("Wheezing (Yes=1, No=0)", [0, 1])
+    alcohol = st.selectbox("Alcohol Consuming (Yes=1, No=0)", [0, 1])
+    coughing = st.selectbox("Coughing (Yes=1, No=0)", [0, 1])
+    shortness_breath = st.selectbox("Shortness of Breath (Yes=1, No=0)", [0, 1])
+    swallowing_difficulty = st.selectbox("Swallowing Difficulty (Yes=1, No=0)", [0, 1])
+    chest_pain = st.selectbox("Chest Pain (Yes=1, No=0)", [0, 1])
 
     col1, col2 = st.columns(2)
 
@@ -157,21 +137,21 @@ elif st.session_state.page == "Prediction":
     with col2:
         if st.button("Predict", use_container_width=True):
             features = np.array([[
-                gender_value,
+                gender,
                 age,
-                smoking_value,
-                yellow_fingers_value,
-                anxiety_value,
-                peer_pressure_value,
-                chronic_disease_value,
-                fatigue_value,
-                allergy_value,
-                wheezing_value,
-                alcohol_value,
-                coughing_value,
-                shortness_breath_value,
-                swallowing_difficulty_value,
-                chest_pain_value
+                smoking,
+                yellow_fingers,
+                anxiety,
+                peer_pressure,
+                chronic_disease,
+                fatigue,
+                allergy,
+                wheezing,
+                alcohol,
+                coughing,
+                shortness_breath,
+                swallowing_difficulty,
+                chest_pain
             ]])
 
             features_scaled = scaler.transform(features)
@@ -189,10 +169,8 @@ elif st.session_state.page == "Prediction":
 # -----------------------------
 elif st.session_state.page == "Result":
     st.markdown('<div class="result-box">', unsafe_allow_html=True)
-    st.markdown(
-        "<h2>Result Page</h2>",
-        unsafe_allow_html=True
-    )
+
+    st.markdown("<h2>Result Page</h2>", unsafe_allow_html=True)
 
     patient_name = st.session_state.patient_name
     result = st.session_state.prediction_result
