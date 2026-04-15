@@ -10,7 +10,8 @@ import base64
 st.set_page_config(
     page_title="Lung Cancer Prediction App",
     page_icon="🫁",
-    layout="centered"
+    layout="centered",
+    initial_sidebar_state="collapsed"
 )
 
 # -----------------------------
@@ -22,50 +23,88 @@ def get_base64_image(image_path):
 
 def set_bg():
     base_path = os.path.dirname(__file__)
-    image_path = os.path.join(base_path, "lungs_bg.jpg")
+    image_path = os.path.join(base_path, "lungs_bg.webp")
     bg_image = get_base64_image(image_path)
 
     st.markdown(
         f"""
         <style>
+        /* Hide default Streamlit header/footer/menu */
+        #MainMenu {{visibility: hidden;}}
+        header {{visibility: hidden;}}
+        footer {{visibility: hidden;}}
+        .stDeployButton {{display:none;}}
+
         .stApp {{
-            background-image: url("data:image/jpg;base64,{bg_image}");
+            background-image: url("data:image/webp;base64,{bg_image}");
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
         }}
 
-        .main-card {{
-            background-color: rgba(255, 255, 255, 0.82);
-            padding: 2rem;
-            border-radius: 18px;
-            box-shadow: 0 4px 18px rgba(0,0,0,0.25);
-            margin-top: 2rem;
+        /* Main content spacing */
+        .block-container {{
+            padding-top: 3rem;
+            padding-bottom: 2rem;
         }}
 
-        .result-box {{
+        /* Home card */
+        .home-card {{
+            background-color: rgba(255, 255, 255, 0.82);
+            padding: 2.5rem 2rem;
+            border-radius: 24px;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.25);
+            text-align: center;
+            max-width: 850px;
+            margin: 2rem auto;
+        }}
+
+        /* Prediction card */
+        .main-card {{
+            background-color: rgba(255, 255, 255, 0.84);
+            padding: 2rem;
+            border-radius: 22px;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.25);
+            margin: 1rem auto;
+        }}
+
+        /* Result card */
+        .result-card {{
             background-color: rgba(255, 255, 255, 0.86);
             padding: 2rem;
-            border-radius: 18px;
+            border-radius: 22px;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.25);
             text-align: center;
-            margin-top: 2rem;
-            box-shadow: 0 4px 18px rgba(0,0,0,0.25);
+            margin: 2rem auto;
         }}
 
-        h1, h2, h3, p, label {{
-            color: black !important;
+        .title-text {{
+            font-size: 3rem;
+            font-weight: 800;
+            color: black;
+            margin-bottom: 1rem;
+        }}
+
+        .subtitle-text {{
+            font-size: 1.5rem;
+            color: black;
+            margin-bottom: 2rem;
+        }}
+
+        h1, h2, h3, p, label, div {{
+            color: black;
         }}
 
         div[data-testid="stButton"] > button {{
-            border-radius: 10px;
-            font-weight: bold;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 18px;
+            padding: 0.6rem 1rem;
         }}
         </style>
         """,
         unsafe_allow_html=True
     )
-
-set_bg()
 
 # -----------------------------
 # Load model and scaler
@@ -89,19 +128,19 @@ if "prediction_result" not in st.session_state:
 if "patient_name" not in st.session_state:
     st.session_state.patient_name = ""
 
+set_bg()
+
 # -----------------------------
 # HOME PAGE
 # -----------------------------
 if st.session_state.page == "Home":
-    st.markdown('<div class="main-card">', unsafe_allow_html=True)
-
     st.markdown(
-        "<h1 style='text-align:center;'>Lung Cancer Prediction</h1>",
-        unsafe_allow_html=True
-    )
-
-    st.markdown(
-        "<p style='text-align:center; font-size:20px;'>Click the button below to start prediction</p>",
+        """
+        <div class="home-card">
+            <div class="title-text">Lung Cancer Prediction</div>
+            <div class="subtitle-text">Click the button below to start prediction</div>
+        </div>
+        """,
         unsafe_allow_html=True
     )
 
@@ -111,18 +150,12 @@ if st.session_state.page == "Home":
             st.session_state.page = "Prediction"
             st.rerun()
 
-    st.markdown("</div>", unsafe_allow_html=True)
-
 # -----------------------------
 # PREDICTION PAGE
 # -----------------------------
 elif st.session_state.page == "Prediction":
     st.markdown('<div class="main-card">', unsafe_allow_html=True)
-
-    st.markdown(
-        "<h2 style='text-align:center;'>Prediction Page</h2>",
-        unsafe_allow_html=True
-    )
+    st.markdown("<h2 style='text-align:center;'>Prediction Page</h2>", unsafe_allow_html=True)
 
     name = st.text_input("Enter Patient Name")
 
@@ -177,23 +210,19 @@ elif st.session_state.page == "Prediction":
             st.session_state.page = "Result"
             st.rerun()
 
-    st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # -----------------------------
 # RESULT PAGE
 # -----------------------------
 elif st.session_state.page == "Result":
-    st.markdown('<div class="result-box">', unsafe_allow_html=True)
-
+    st.markdown('<div class="result-card">', unsafe_allow_html=True)
     st.markdown("<h2>Result Page</h2>", unsafe_allow_html=True)
 
     patient_name = st.session_state.patient_name
     result = st.session_state.prediction_result
 
-    st.markdown(
-        f"<h3>Patient Name: {patient_name}</h3>",
-        unsafe_allow_html=True
-    )
+    st.markdown(f"<h3>Patient Name: {patient_name}</h3>", unsafe_allow_html=True)
 
     if result == 1:
         st.error(f"{patient_name} has Lung Cancer.")
@@ -212,4 +241,4 @@ elif st.session_state.page == "Result":
             st.session_state.page = "Prediction"
             st.rerun()
 
-    st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
