@@ -32,15 +32,26 @@ def set_bg():
     st.markdown(
         f"""
         <style>
-        #MainMenu {{visibility: hidden;}}
-        footer {{visibility: hidden;}}
-        header {{visibility: hidden;}}
-        .stDeployButton {{display:none;}}
+        #MainMenu {{
+            visibility: hidden;
+        }}
+
+        footer {{
+            visibility: hidden;
+        }}
+
+        header {{
+            visibility: hidden;
+        }}
+
+        .stDeployButton {{
+            display: none;
+        }}
 
         .block-container {{
             padding-top: 1rem !important;
             padding-bottom: 2rem !important;
-            max-width: 900px;
+            max-width: 950px;
         }}
 
         .stApp {{
@@ -50,57 +61,59 @@ def set_bg():
             background-attachment: fixed;
         }}
 
-        .home-box {{
-            background: rgba(255,255,255,0.82);
-            padding: 2.5rem 2rem;
-            border-radius: 22px;
-            text-align: center;
-            margin-top: 4rem;
+        .top-card {{
+            background: rgba(255, 255, 255, 0.82);
+            padding: 2rem;
+            border-radius: 24px;
             box-shadow: 0 6px 24px rgba(0,0,0,0.25);
+            margin-top: 2rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
         }}
 
         .page-title {{
-            text-align: center;
-            font-size: 3rem;
+            font-size: 2.8rem;
             font-weight: 800;
             color: black;
             margin-bottom: 0.8rem;
         }}
 
         .page-subtitle {{
-            text-align: center;
             font-size: 1.3rem;
             color: black;
-            margin-bottom: 1.5rem;
-        }}
-
-        .section-title {{
-            text-align: center;
-            font-size: 2.2rem;
-            font-weight: 800;
-            color: black;
-            margin-top: 1rem;
             margin-bottom: 1rem;
         }}
 
         .result-title {{
-            text-align: center;
             font-size: 2.2rem;
             font-weight: 800;
             color: black;
-            margin-top: 2rem;
             margin-bottom: 1rem;
         }}
 
-        .result-box {{
-            background: rgba(255,255,255,0.82);
-            padding: 2rem;
-            border-radius: 20px;
-            margin-top: 1rem;
-            box-shadow: 0 6px 24px rgba(0,0,0,0.25);
+        .patient-name {{
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: black;
+            margin-bottom: 1rem;
         }}
 
-        h1, h2, h3, label, p, div {{
+        .result-text {{
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: black;
+            margin-top: 0.5rem;
+        }}
+
+        .prediction-box {{
+            background: rgba(255, 255, 255, 0.82);
+            padding: 2rem;
+            border-radius: 24px;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.25);
+            margin-top: 1rem;
+        }}
+
+        h1, h2, h3, p, label, div {{
             color: black !important;
         }}
 
@@ -108,6 +121,7 @@ def set_bg():
             border-radius: 12px;
             font-size: 18px;
             font-weight: 600;
+            padding: 0.6rem 1rem;
         }}
         </style>
         """,
@@ -144,9 +158,10 @@ if "patient_name" not in st.session_state:
 if st.session_state.page == "Home":
     st.markdown(
         """
-        <div class="home-box">
+        <div class="top-card">
             <div class="page-title">Lung Cancer Prediction</div>
             
+        </div>
         """,
         unsafe_allow_html=True
     )
@@ -161,7 +176,16 @@ if st.session_state.page == "Home":
 # PREDICTION PAGE
 # -----------------------------
 elif st.session_state.page == "Prediction":
-    st.markdown('<div class="section-title">Prediction Page</div>', unsafe_allow_html=True)
+    st.markdown(
+        """
+        <div class="top-card">
+            <div class="result-title">Prediction Page</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.markdown('<div class="prediction-box">', unsafe_allow_html=True)
 
     name = st.text_input("Enter Patient Name")
 
@@ -180,6 +204,8 @@ elif st.session_state.page == "Prediction":
     shortness_breath = st.selectbox("Shortness of Breath (Yes=1, No=0)", [0, 1])
     swallowing_difficulty = st.selectbox("Swallowing Difficulty (Yes=1, No=0)", [0, 1])
     chest_pain = st.selectbox("Chest Pain (Yes=1, No=0)", [0, 1])
+
+    st.markdown('</div>', unsafe_allow_html=True)
 
     col1, col2 = st.columns(2)
 
@@ -220,19 +246,24 @@ elif st.session_state.page == "Prediction":
 # RESULT PAGE
 # -----------------------------
 elif st.session_state.page == "Result":
-    st.markdown('<div class="result-title">Result Page</div>', unsafe_allow_html=True)
-
     patient_name = st.session_state.patient_name
     result = st.session_state.prediction_result
 
-    st.markdown('<div class="result-box">', unsafe_allow_html=True)
-    st.markdown(f"### Patient Name: {patient_name}")
-
     if result == 1:
-        st.error(f"{patient_name} Yes:lung Cancer.")
+        result_message = f"{patient_name} has Lung Cancer."
     else:
-        st.success(f"{patient_name} No:Lung Cancer.")
-    st.markdown('</div>', unsafe_allow_html=True)
+        result_message = f"{patient_name} does not have Lung Cancer."
+
+    st.markdown(
+        f"""
+        <div class="top-card">
+            <div class="result-title">Result Page</div>
+            <div class="patient-name">Patient Name: {patient_name}</div>
+            <div class="result-text">{result_message}</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
     col1, col2 = st.columns(2)
 
