@@ -22,41 +22,27 @@ def get_base64_image(image_path):
         return base64.b64encode(img_file.read()).decode()
 
 # -----------------------------
-# Background + full UI styling
+# Background + styling
 # -----------------------------
 def set_bg():
     base_path = os.path.dirname(__file__)
-    image_path = os.path.join(base_path, "lungs_bg.jpg")
+    image_path = os.path.join(base_path, "lungs_bg.webp")
     bg_image = get_base64_image(image_path)
 
     st.markdown(
         f"""
         <style>
-        /* Hide default Streamlit elements */
-        #MainMenu {{
-            visibility: hidden;
-        }}
+        #MainMenu {{visibility: hidden;}}
+        footer {{visibility: hidden;}}
+        header {{visibility: hidden;}}
+        .stDeployButton {{display:none;}}
 
-        footer {{
-            visibility: hidden;
-        }}
-
-        header {{
-            visibility: hidden;
-            height: 0px;
-        }}
-
-        .stDeployButton {{
-            display: none;
-        }}
-
-        /* Remove unnecessary top spacing */
         .block-container {{
             padding-top: 1rem !important;
             padding-bottom: 2rem !important;
+            max-width: 900px;
         }}
 
-        /* App background */
         .stApp {{
             background-image: url("data:image/webp;base64,{bg_image}");
             background-size: cover;
@@ -64,69 +50,70 @@ def set_bg():
             background-attachment: fixed;
         }}
 
-        /* Home card */
-        .home-card {{
-            background-color: rgba(255, 255, 255, 0.82);
+        .home-box {{
+            background: rgba(255,255,255,0.82);
             padding: 2.5rem 2rem;
             border-radius: 22px;
-            box-shadow: 0 6px 24px rgba(0,0,0,0.25);
             text-align: center;
-            max-width: 850px;
-            margin: 3rem auto 2rem auto;
+            margin-top: 4rem;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.25);
         }}
 
-        /* Prediction card */
-        .main-card {{
-            background-color: rgba(255, 255, 255, 0.84);
-            padding: 2rem;
-            border-radius: 22px;
-            box-shadow: 0 6px 24px rgba(0,0,0,0.25);
-            max-width: 900px;
-            margin: 2rem auto;
-        }}
-
-        /* Result card */
-        .result-card {{
-            background-color: rgba(255, 255, 255, 0.86);
-            padding: 2rem;
-            border-radius: 22px;
-            box-shadow: 0 6px 24px rgba(0,0,0,0.25);
+        .page-title {{
             text-align: center;
-            max-width: 850px;
-            margin: 3rem auto;
-        }}
-
-        /* Typography */
-        .title-text {{
             font-size: 3rem;
             font-weight: 800;
             color: black;
-            margin-bottom: 1rem;
+            margin-bottom: 0.8rem;
         }}
 
-        .subtitle-text {{
-            font-size: 1.4rem;
+        .page-subtitle {{
+            text-align: center;
+            font-size: 1.3rem;
             color: black;
             margin-bottom: 1.5rem;
         }}
 
-        h1, h2, h3, p, label {{
+        .section-title {{
+            text-align: center;
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: black;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }}
+
+        .result-title {{
+            text-align: center;
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: black;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }}
+
+        .result-box {{
+            background: rgba(255,255,255,0.82);
+            padding: 2rem;
+            border-radius: 20px;
+            margin-top: 1rem;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.25);
+        }}
+
+        h1, h2, h3, label, p, div {{
             color: black !important;
         }}
 
-        /* Buttons */
         div[data-testid="stButton"] > button {{
             border-radius: 12px;
-            font-weight: 600;
             font-size: 18px;
-            padding: 0.6rem 1rem;
+            font-weight: 600;
         }}
         </style>
         """,
         unsafe_allow_html=True
     )
 
-# Apply background
 set_bg()
 
 # -----------------------------
@@ -157,9 +144,9 @@ if "patient_name" not in st.session_state:
 if st.session_state.page == "Home":
     st.markdown(
         """
-        <div class="home-card">
-            <div class="title-text">Lung Cancer Prediction</div>
-            <div class="subtitle-text">Click the button below to start prediction</div>
+        <div class="home-box">
+            <div class="page-title">Lung Cancer Prediction</div>
+            <div class="page-subtitle">Click the button below to start prediction</div>
         </div>
         """,
         unsafe_allow_html=True
@@ -175,11 +162,7 @@ if st.session_state.page == "Home":
 # PREDICTION PAGE
 # -----------------------------
 elif st.session_state.page == "Prediction":
-    st.markdown('<div class="main-card">', unsafe_allow_html=True)
-    st.markdown(
-        "<h2 style='text-align:center;'>Prediction Page</h2>",
-        unsafe_allow_html=True
-    )
+    st.markdown('<div class="section-title">Prediction Page</div>', unsafe_allow_html=True)
 
     name = st.text_input("Enter Patient Name")
 
@@ -234,27 +217,23 @@ elif st.session_state.page == "Prediction":
             st.session_state.page = "Result"
             st.rerun()
 
-    st.markdown('</div>', unsafe_allow_html=True)
-
 # -----------------------------
 # RESULT PAGE
 # -----------------------------
 elif st.session_state.page == "Result":
-    st.markdown('<div class="result-card">', unsafe_allow_html=True)
-    st.markdown("<h2>Result Page</h2>", unsafe_allow_html=True)
+    st.markdown('<div class="result-title">Result Page</div>', unsafe_allow_html=True)
 
     patient_name = st.session_state.patient_name
     result = st.session_state.prediction_result
 
-    st.markdown(
-        f"<h3>Patient Name: {patient_name}</h3>",
-        unsafe_allow_html=True
-    )
+    st.markdown('<div class="result-box">', unsafe_allow_html=True)
+    st.markdown(f"### Patient Name: {patient_name}")
 
     if result == 1:
-        st.error(f"{patient_name} Yes:Lung Cancer.")
+        st.error(f"{patient_name} Yes:lung Cancer.")
     else:
-        st.success(f"{patient_name}  No:Lung Cancer.")
+        st.success(f"{patient_name} No:Lung Cancer.")
+    st.markdown('</div>', unsafe_allow_html=True)
 
     col1, col2 = st.columns(2)
 
@@ -267,5 +246,3 @@ elif st.session_state.page == "Result":
         if st.button("New Prediction", use_container_width=True):
             st.session_state.page = "Prediction"
             st.rerun()
-
-    st.markdown('</div>', unsafe_allow_html=True)
