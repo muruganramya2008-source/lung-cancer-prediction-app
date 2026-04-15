@@ -138,7 +138,6 @@ if st.session_state.page == "Home":
         """
         <div class="home-card">
             <div class="title-text">Lung Cancer Prediction</div>
-            <div class="subtitle-text">Click the button below to start prediction</div>
         </div>
         """,
         unsafe_allow_html=True
@@ -225,9 +224,9 @@ elif st.session_state.page == "Result":
     st.markdown(f"<h3>Patient Name: {patient_name}</h3>", unsafe_allow_html=True)
 
     if result == 1:
-        st.error(f"{patient_name} has Lung Cancer.")
+        st.error(f"{patient_name} Yes : Lung Cancer.")
     else:
-        st.success(f"{patient_name} does not have Lung Cancer.")
+        st.success(f"{patient_name} No :  Lung Cancer.")
 
     col1, col2 = st.columns(2)
 
