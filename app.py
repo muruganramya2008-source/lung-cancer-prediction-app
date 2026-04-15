@@ -146,8 +146,7 @@ if st.session_state.page == "Home":
         """
         <div class="home-box">
             <div class="page-title">Lung Cancer Prediction</div>
-            <div class="page-subtitle">Click the button below to start prediction</div>
-        </div>
+            
         """,
         unsafe_allow_html=True
     )
