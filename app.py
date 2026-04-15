@@ -22,14 +22,14 @@ def get_base64_image(image_path):
 
 def set_bg():
     base_path = os.path.dirname(__file__)
-    image_path = os.path.join(base_path, "lungs_bg.webp")
+    image_path = os.path.join(base_path, "lungs_bg.jpg")
     bg_image = get_base64_image(image_path)
 
     st.markdown(
         f"""
         <style>
         .stApp {{
-            background-image: url("data:image/webp;base64,{bg_image}");
+            background-image: url("data:image/jpg;base64,{bg_image}");
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
