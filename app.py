@@ -15,26 +15,48 @@ st.set_page_config(
 )
 
 # -----------------------------
-# Background image from local file
+# Convert local image to base64
 # -----------------------------
 def get_base64_image(image_path):
     with open(image_path, "rb") as img_file:
         return base64.b64encode(img_file.read()).decode()
 
+# -----------------------------
+# Background + full UI styling
+# -----------------------------
 def set_bg():
     base_path = os.path.dirname(__file__)
-    image_path = os.path.join(base_path, "lungs_bg.jpg")
+    image_path = os.path.join(base_path, "lungs_bg.webp")
     bg_image = get_base64_image(image_path)
 
     st.markdown(
         f"""
         <style>
-        /* Hide default Streamlit header/footer/menu */
-        #MainMenu {{visibility: hidden;}}
-        header {{visibility: hidden;}}
-        footer {{visibility: hidden;}}
-        .stDeployButton {{display:none;}}
+        /* Hide default Streamlit elements */
+        #MainMenu {{
+            visibility: hidden;
+        }}
 
+        footer {{
+            visibility: hidden;
+        }}
+
+        header {{
+            visibility: hidden;
+            height: 0px;
+        }}
+
+        .stDeployButton {{
+            display: none;
+        }}
+
+        /* Remove unnecessary top spacing */
+        .block-container {{
+            padding-top: 1rem !important;
+            padding-bottom: 2rem !important;
+        }}
+
+        /* App background */
         .stApp {{
             background-image: url("data:image/webp;base64,{bg_image}");
             background-size: cover;
@@ -42,21 +64,15 @@ def set_bg():
             background-attachment: fixed;
         }}
 
-        /* Main content spacing */
-        .block-container {{
-            padding-top: 3rem;
-            padding-bottom: 2rem;
-        }}
-
         /* Home card */
         .home-card {{
             background-color: rgba(255, 255, 255, 0.82);
             padding: 2.5rem 2rem;
-            border-radius: 24px;
+            border-radius: 22px;
             box-shadow: 0 6px 24px rgba(0,0,0,0.25);
             text-align: center;
             max-width: 850px;
-            margin: 2rem auto;
+            margin: 3rem auto 2rem auto;
         }}
 
         /* Prediction card */
@@ -65,7 +81,8 @@ def set_bg():
             padding: 2rem;
             border-radius: 22px;
             box-shadow: 0 6px 24px rgba(0,0,0,0.25);
-            margin: 1rem auto;
+            max-width: 900px;
+            margin: 2rem auto;
         }}
 
         /* Result card */
@@ -75,9 +92,11 @@ def set_bg():
             border-radius: 22px;
             box-shadow: 0 6px 24px rgba(0,0,0,0.25);
             text-align: center;
-            margin: 2rem auto;
+            max-width: 850px;
+            margin: 3rem auto;
         }}
 
+        /* Typography */
         .title-text {{
             font-size: 3rem;
             font-weight: 800;
@@ -86,15 +105,16 @@ def set_bg():
         }}
 
         .subtitle-text {{
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             color: black;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
         }}
 
-        h1, h2, h3, p, label, div {{
-            color: black;
+        h1, h2, h3, p, label {{
+            color: black !important;
         }}
 
+        /* Buttons */
         div[data-testid="stButton"] > button {{
             border-radius: 12px;
             font-weight: 600;
@@ -105,6 +125,9 @@ def set_bg():
         """,
         unsafe_allow_html=True
     )
+
+# Apply background
+set_bg()
 
 # -----------------------------
 # Load model and scaler
@@ -128,8 +151,6 @@ if "prediction_result" not in st.session_state:
 if "patient_name" not in st.session_state:
     st.session_state.patient_name = ""
 
-set_bg()
-
 # -----------------------------
 # HOME PAGE
 # -----------------------------
@@ -138,6 +159,7 @@ if st.session_state.page == "Home":
         """
         <div class="home-card">
             <div class="title-text">Lung Cancer Prediction</div>
+            <div class="subtitle-text">Click the button below to start prediction</div>
         </div>
         """,
         unsafe_allow_html=True
@@ -154,7 +176,10 @@ if st.session_state.page == "Home":
 # -----------------------------
 elif st.session_state.page == "Prediction":
     st.markdown('<div class="main-card">', unsafe_allow_html=True)
-    st.markdown("<h2 style='text-align:center;'>Prediction Page</h2>", unsafe_allow_html=True)
+    st.markdown(
+        "<h2 style='text-align:center;'>Prediction Page</h2>",
+        unsafe_allow_html=True
+    )
 
     name = st.text_input("Enter Patient Name")
 
@@ -221,12 +246,15 @@ elif st.session_state.page == "Result":
     patient_name = st.session_state.patient_name
     result = st.session_state.prediction_result
 
-    st.markdown(f"<h3>Patient Name: {patient_name}</h3>", unsafe_allow_html=True)
+    st.markdown(
+        f"<h3>Patient Name: {patient_name}</h3>",
+        unsafe_allow_html=True
+    )
 
     if result == 1:
-        st.error(f"{patient_name} Yes : Lung Cancer.")
+        st.error(f"{patient_name} has Lung Cancer.")
     else:
-        st.success(f"{patient_name} No :  Lung Cancer.")
+        st.success(f"{patient_name} does not have Lung Cancer.")
 
     col1, col2 = st.columns(2)
 
