@@ -4,8 +4,15 @@ import joblib
 import numpy as np
 
 # Load model & scaler
-model = joblib.load("lung_cancer_rf_model.pkl")
-scaler = joblib.load("scaler.pkl")
+import os
+
+base_path = os.path.dirname(__file__)
+
+model_path = os.path.join(base_path, "lung_cancer_rf_model.pkl")
+scaler_path = os.path.join(base_path, "scaler.pkl")
+
+model = joblib.load(model_path)
+scaler = joblib.load(scaler_path)
 
 st.title("Lung Cancer Prediction App")
 
