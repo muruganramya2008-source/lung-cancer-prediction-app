@@ -252,9 +252,9 @@ elif st.session_state.page == "Result":
     )
 
     if result == 1:
-        st.error(f"{patient_name} has Lung Cancer.")
+        st.error(f"{patient_name} Yes:Lung Cancer.")
     else:
-        st.success(f"{patient_name} does not have Lung Cancer.")
+        st.success(f"{patient_name}  No:Lung Cancer.")
 
     col1, col2 = st.columns(2)
 
