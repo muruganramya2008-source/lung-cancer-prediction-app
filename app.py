@@ -248,7 +248,7 @@ elif st.session_state.page == "Result":
     if result == 1:
         result_message = f"{patient_name} : Yes Lung Cancer."
     else:
-        result_message = f"{patient_name} : Yes Lung Cancer."
+        result_message = f"{patient_name} : No Lung Cancer."
 
     st.markdown(
         f"""
