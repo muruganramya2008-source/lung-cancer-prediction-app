@@ -243,7 +243,7 @@ elif st.session_state.page == "Prediction":
 # -----------------------------
 elif st.session_state.page == "Result":
     patient_name = st.session_state.patient_name
-    result = st.session_state.prediction_result
+    result = st.session_state.prediction_result 
 
     if result == 1:
         result_message = f"{patient_name} : No Lung Cancer ."
