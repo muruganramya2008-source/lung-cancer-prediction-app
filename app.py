@@ -1,176 +1,83 @@
-import streamlit as st
-import joblib
+import pandas as pd
 import numpy as np
-import os
-import base64
+import joblib
+
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix
+
+from imblearn.over_sampling import SMOTE
 
 # -----------------------------
-# Page config
+# LOAD DATA
 # -----------------------------
-st.set_page_config(
-    page_title="Lung Cancer Prediction App",
-    page_icon="🫁",
-    layout="centered"
+df = pd.read_csv("survey lung cancer.csv")
+
+# -----------------------------
+# DATA CLEANING
+# -----------------------------
+df = df.drop_duplicates()
+
+# -----------------------------
+# TRANSFORMATION
+# -----------------------------
+df['GENDER'] = df['GENDER'].map({'M':1, 'F':0})
+df['LUNG_CANCER'] = df['LUNG_CANCER'].map({'YES':1, 'NO':0})
+
+# -----------------------------
+# SPLIT FEATURES
+# -----------------------------
+X = df.drop("LUNG_CANCER", axis=1)
+y = df["LUNG_CANCER"]
+
+# -----------------------------
+# NORMALIZATION
+# -----------------------------
+scaler = MinMaxScaler()
+X_scaled = scaler.fit_transform(X)
+
+# -----------------------------
+# TRAIN TEST SPLIT
+# -----------------------------
+X_train, X_test, y_train, y_test = train_test_split(
+    X_scaled, y, test_size=0.2, random_state=42
 )
 
 # -----------------------------
-# Background
+# SMOTE (IMPORTANT)
 # -----------------------------
-def get_base64_image(image_path):
-    with open(image_path, "rb") as img_file:
-        return base64.b64encode(img_file.read()).decode()
-
-def set_bg():
-    base_path = os.path.dirname(__file__)
-    image_path = os.path.join(base_path, "lungs_bg.jpg")
-
-    if os.path.exists(image_path):
-        bg_image = get_base64_image(image_path)
-
-        st.markdown(f"""
-        <style>
-        .stApp {{
-            background-image: url("data:image/webp;base64,{bg_image}");
-            background-size: cover;
-        }}
-
-        .top-card {{
-            background: rgba(255,255,255,0.85);
-            padding: 2rem;
-            border-radius: 20px;
-            text-align: center;
-            margin-top: 2rem;
-        }}
-        </style>
-        """, unsafe_allow_html=True)
-
-set_bg()
+smote = SMOTE(random_state=42)
+X_train_smote, y_train_smote = smote.fit_resample(X_train, y_train)
 
 # -----------------------------
-# Load model
+# MODEL TRAINING (FIXED RF)
 # -----------------------------
-base_path = os.path.dirname(__file__)
-model = joblib.load(os.path.join(base_path, "lung_cancer_rf_model.pkl"))
-scaler = joblib.load(os.path.join(base_path, "scaler.pkl"))
+model = RandomForestClassifier(
+    n_estimators=200,
+    max_depth=10,
+    min_samples_split=5,
+    min_samples_leaf=2,
+    random_state=42
+)
 
-# -----------------------------
-# Session state
-# -----------------------------
-if "page" not in st.session_state:
-    st.session_state.page = "Home"
-
-if "prediction_result" not in st.session_state:
-    st.session_state.prediction_result = None
-
-if "patient_name" not in st.session_state:
-    st.session_state.patient_name = ""
+model.fit(X_train_smote, y_train_smote)
 
 # -----------------------------
-# HOME PAGE
+# TEST CHECK (IMPORTANT)
 # -----------------------------
-if st.session_state.page == "Home":
+y_pred = model.predict(X_test)
 
-    st.markdown("""
-    <div class="top-card">
-        <h1>Lung Cancer Prediction</h1>
-    </div>
-    """, unsafe_allow_html=True)
+print("Accuracy:", accuracy_score(y_test, y_pred))
+print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
 
-    col1, col2, col3 = st.columns([1,2,1])
-
-    with col2:
-        if st.button("Start Prediction", use_container_width=True):
-            st.session_state.page = "Prediction"
-            st.rerun()
+print("\nSample Predictions:")
+print(model.predict(X_test[:10]))   # 🔥 MUST NOT be all 1
 
 # -----------------------------
-# PREDICTION PAGE
+# SAVE MODEL + SCALER
 # -----------------------------
-elif st.session_state.page == "Prediction":
+joblib.dump(model, "lung_cancer_rf_model.pkl")
+joblib.dump(scaler, "scaler.pkl")
 
-    st.markdown("""
-    <div class="top-card">
-        <h2>Prediction Page</h2>
-    </div>
-    """, unsafe_allow_html=True)
-
-    name = st.text_input("Enter Patient Name")
-
-    gender = st.selectbox("Gender", [0,1])
-    age = st.number_input("Age", 1, 100, 50)
-    smoking = st.selectbox("Smoking", [0,1])
-    yellow_fingers = st.selectbox("Yellow Fingers", [0,1])
-    anxiety = st.selectbox("Anxiety", [0,1])
-    peer_pressure = st.selectbox("Peer Pressure", [0,1])
-    chronic_disease = st.selectbox("Chronic Disease", [0,1])
-    fatigue = st.selectbox("Fatigue", [0,1])
-    allergy = st.selectbox("Allergy", [0,1])
-    wheezing = st.selectbox("Wheezing", [0,1])
-    alcohol = st.selectbox("Alcohol", [0,1])
-    coughing = st.selectbox("Coughing", [0,1])
-    shortness_breath = st.selectbox("Shortness of Breath", [0,1])
-    swallowing_difficulty = st.selectbox("Swallowing Difficulty", [0,1])
-    chest_pain = st.selectbox("Chest Pain", [0,1])
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-        if st.button("Back"):
-            st.session_state.page = "Home"
-            st.rerun()
-
-    with col2:
-        if st.button("Predict"):
-
-            # 🔥 correct feature order
-            features = np.array([[
-                gender, age, smoking, yellow_fingers, anxiety,
-                peer_pressure, chronic_disease, fatigue, allergy,
-                wheezing, alcohol, coughing, shortness_breath,
-                swallowing_difficulty, chest_pain
-            ]])
-
-            features_scaled = scaler.transform(features)
-
-            prediction = model.predict(features_scaled)[0]
-
-            # DEBUG
-            st.write("Prediction value:", prediction)
-
-            st.session_state.patient_name = name if name else "Patient"
-            st.session_state.prediction_result = int(prediction)
-            st.session_state.page = "Result"
-            st.rerun()
-
-# -----------------------------
-# RESULT PAGE
-# -----------------------------
-elif st.session_state.page == "Result":
-
-    name = st.session_state.patient_name
-    result = st.session_state.prediction_result
-
-    # 🔥 correct mapping
-    if result == 1:
-        msg = f"{name} : Yes Lung Cancer"
-    else:
-        msg = f"{name} : No Lung Cancer"
-
-    st.markdown(f"""
-    <div class="top-card">
-        <h2>Result Page</h2>
-        <h3>{msg}</h3>
-    </div>
-    """, unsafe_allow_html=True)
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-        if st.button("Home"):
-            st.session_state.page = "Home"
-            st.rerun()
-
-    with col2:
-        if st.button("New Prediction"):
-            st.session_state.page = "Prediction"
-            st.rerun()
+print("Model saved successfully")
