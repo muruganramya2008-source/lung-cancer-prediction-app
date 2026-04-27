@@ -249,7 +249,7 @@ elif st.session_state.page == "Result":
         result_message = f"{patient_name} : No Lung Cancer ."
     else:
         result_message = f"{patient_name} : Yes Lung Cancer."
-No Lung Cancer
+
     st.markdown(
         f"""
         <div class="top-card">
